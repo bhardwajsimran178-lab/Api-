@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <h2>💼 Real-Time Job Search (Adzuna API)</h2>
+<input id="search" placeholder="Enter job title (e.g. Python Developer)">
+<button onclick="getJobs()">Fetch Jobs</button>
+<div id="jobs"></div>
+
+<script>
+async function getJobs() {
+  const query = document.getElementById("search").value || "developer";
+  const app_id = "7c927e93";   // 🔹 Paste your App ID here
+  const app_key = "9c0b1796af10eb6de623f11ca6c287ff"; // 🔹 Paste your App Key here
+
+  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${app_id}&app_key=${app_key}&results_per_page=5&what=${query}&where=india`;
+
+  document.getElementById("jobs").innerHTML = "<p>Loading live jobs...</p>";
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.results || data.results.length === 0) {
+      document.getElementById("jobs").innerHTML = "<p>No results found.</p>";
+      return;
+    }
+
+    let html = "";
+    data.results.forEach(job => {
+      html += `
+        <h3>${job.title}</h3>
+        <p>🏢 ${job.company.display_name}</p>
+        <p>📍 ${job.location.display_name}</p>
+        <p>💰 ${job.salary_min ? job.salary_min + " - " + job.salary_max : "Not specified"}</p>
+        <a href="${job.redirect_url}" target="_blank">Apply Now</a>
+        <hr>
+      `;
+    });
+
+    document.getElementById("jobs").innerHTML = html;
+  } catch (error) {
+    document.getElementById("jobs").innerHTML = "<p>Error fetching jobs. Check your key or network.</p>";
+  }
+}
+</script>
+    
+  </body>
+  
+</html>
