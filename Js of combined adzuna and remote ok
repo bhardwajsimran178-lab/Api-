@@ -1,0 +1,49 @@
+async function getAllJobs(){
+
+  document.getElementById("jobs").innerHTML = "<p>Loading...</p>";
+
+  try{
+
+    // ---- RemoteOK ----
+
+    let r = await fetch("https://cors-anywhere.herokuapp.com/https://remoteok.com/api");
+
+    let remoteOK = await r.json();
+
+    // ---- Adzuna ----
+
+    let ad = await fetch(`https://cors-anywhere.herokuapp.com/https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=7c927e93&app_key=9c0b1796af10eb6de623f11ca6c287ff`);
+
+    let adzuna = await ad.json();
+
+    let combined = [
+
+      ...remoteOK.slice(1),
+
+      ...adzuna.results
+
+    ];
+
+    let html = `<h3>Total Combined Jobs: ${combined.length}</h3><ul>`;
+
+    combined.slice(0,20).forEach(j=>{
+
+      // FIX HERE
+
+      let t = j.title || j.position || j.role || (j.company ? j.company.display_name : "") || "No Title Available";
+
+      html += `<li>${t}</li>`;
+
+    });
+
+    html += "</ul>";
+
+    document.getElementById("jobs").innerHTML = html;
+
+  } catch(err){
+
+    document.getElementById("jobs").innerHTML = "Error: "+err;
+
+  }
+
+}
