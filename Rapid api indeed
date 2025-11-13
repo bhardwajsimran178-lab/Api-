@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Indeed Job Finder (JSearch)</title>
+
+  <style>
+
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;max-width:900px;margin:24px auto;padding:16px}
+
+    h1{font-size:1.4rem;margin-bottom:8px}
+
+    .form-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+
+    input{flex:1;padding:8px;border-radius:6px;border:1px solid #ddd;min-width:200px}
+
+    button{padding:9px 12px;border-radius:6px;border:0;background:#0b74de;color:#fff;cursor:pointer}
+
+    .jobs{margin-top:18px}
+
+    .job{padding:12px;border-radius:8px;border:1px solid #eee;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+
+    .meta{font-size:0.9rem;color:#555}
+
+    a.apply{display:inline-block;margin-top:8px;text-decoration:none;padding:6px 8px;border-radius:6px;border:1px solid #0b74de;color:#0b74de}
+
+    .small{font-size:0.85rem;color:#888}
+
+    #status{margin-top:8px;color:#666}
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>Indeed Job Finder (via JSearch)</h1>
+
+  <div class="form-row">
+
+    <input id="skill" placeholder="Job title or skill (e.g. Python Developer)" value="Python Developer" />
+
+    <input id="location" placeholder="Location (city or country)" value="India" />
+
+    <button id="searchBtn">Search</button>
+
+  </div>
+
+  <div id="status" class="small">Paste your RapidAPI key in the JS (see below).</div>
+
+  <div class="jobs" id="jobs"></div>
+
+  <script>
+
+  
+
+  const RAPIDAPI_KEY = "bad8061ca4msha598b84b4dcc84dp1d1351jsnb57f16aea17b";
+
+  const host = "jsearch.p.rapidapi.com";
+
+  async function searchJobs() {
+
+    const jobsEl = document.getElementById("jobs");
+
+    const status = document.getElementById("status");
+
+    jobsEl.innerHTML = "";
+
+    status.textContent = "Searching...";
+
+    const skill = document.getElementById("skill").value.trim();
+
+    const location = document.getElementById("location").value.trim();
+
+    const query = encodeURIComponent(`${skill} in ${location}`);
+
+    const url = `https://${host}/search?query=${query}&num_pages=1`;
+
+    try {
+
+      const res = await fetch(url, {
+
+        method: 'GET',
+
+        headers: {
+
+          'x-rapidapi-key': RAPIDAPI_KEY,
+
+          'x-rapidapi-host': host
+
+        }
+
+      });
+
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+      const json = await res.json();
+
+      const data = json.data || [];
+
+      if (data.length === 0) {
+
+        status.textContent = "No jobs found — try different keywords or location.";
+
+        return;
+
+      }
+
+      status.textContent = `Found ${data.length} jobs`;
+
+      data.forEach((job, idx) => {
+
+        const div = document.createElement('div');
+
+        div.className = 'job';
+
+        div.innerHTML = `
+
+          <strong>${idx+1}. ${escapeHtml(job.employer_name || '—')} — ${escapeHtml(job.job_title || '—')}</strong>
+
+          <div class="meta">${escapeHtml(job.job_city || '')}${job.job_city && job.job_country ? ', ' : ''}${escapeHtml(job.job_country || '')} • ${escapeHtml(job.job_employment_type || '')}</div>
+
+          <div class="small">${escapeHtml(job.job_description ? job.job_description.slice(0,200) + (job.job_description.length>200? '...':'') : '')}</div>
+
+          <a class="apply" href="${escapeAttr(job.job_apply_link || '#')}" target="_blank">Apply</a>
+
+        `;
+
+        jobsEl.appendChild(div);
+
+      });
+
+    } catch (err) {
+
+      status.textContent = "Error: " + err.message;
+
+      console.error(err);
+
+    }
+
+  }
+
+  function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  function escapeAttr(s){return encodeURI(String(s||''));}
+
+  document.getElementById('searchBtn').addEventListener('click', searchJobs);
+
+  document.getElementById('skill').addEventListener('keydown', e=>{if(e.key==='Enter')searchJobs();});
+
+  document.getElementById('location').addEventListener('keydown', e=>{if(e.key==='Enter')searchJobs();});
+
+  </script>
+
+</body>
+
+</html>
+    
+  </body>
+  
+</html>
