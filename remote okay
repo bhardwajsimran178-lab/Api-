@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <h2> Real-Time Jobs (Remote OK API)</h2>
+
+<button onclick="getJobs()">Fetch Live Jobs</button>
+
+<div id="jobs"></div>
+
+<script>
+
+async function getJobs() {
+
+  document.getElementById("jobs").innerHTML = "<p>Loading live job data...</p>";
+
+  const res = await fetch("https://remoteok.com/api", {
+
+    headers: { "User-Agent": "Mozilla/5.0" }
+
+  });
+
+  const data = await res.json();
+
+  
+
+  const jobs = data.slice(1, 6); // skip first metadata entry
+
+  const container = document.getElementById("jobs");
+
+  container.innerHTML = "";
+
+  jobs.forEach(job => {
+
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+
+      <h3>${job.position}</h3>
+
+      <p> ${job.company}</p>
+
+      <p> ${job.location || 'Remote'}</p>
+
+      <p> Tags: ${job.tags.join(', ')}</p>
+
+      <a href="${job.url}" target="_blank">Apply Now</a>
+
+      <hr>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+</script>
+    
+  </body>
+  
+</html>
