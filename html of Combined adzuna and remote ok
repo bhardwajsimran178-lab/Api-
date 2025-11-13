@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <h2> Unified Job Data (RemoteOK + Adzuna) </h2>
+
+<button onclick="getAllJobs()">Fetch Combined Jobs</button>
+
+<div id="jobs"></div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
